@@ -88,7 +88,7 @@ class DecoderBlock(nn.Module):
 class TernausNetV2(nn.Module):
     """Variation of the UNet architecture with InplaceABN encoder."""
 
-    def __init__(self, num_classes=1, num_filters=32, is_deconv=False, num_input_channels=11, **kwargs):
+    def __init__(self, num_classes=1, num_filters=32, is_deconv=False, num_input_channels=12, **kwargs):
         """
 
         Args:
@@ -105,6 +105,8 @@ class TernausNetV2(nn.Module):
             norm_act = ABN
         else:
             norm_act = kwargs['norm_act']
+
+        self.siam_inconv(num_input_channels, 32, deepness=2)
 
         self.pool = nn.MaxPool2d(2, 2)
 
@@ -126,6 +128,7 @@ class TernausNetV2(nn.Module):
         self.final = nn.Conv2d(num_filters, num_classes, kernel_size=1)
 
     def forward(self, x):
+    	x = self.SiamInconv(x)
         conv1 = self.conv1(x)
         conv2 = self.conv2(self.pool(conv1))
         conv3 = self.conv3(self.pool(conv2))
