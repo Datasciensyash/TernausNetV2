@@ -22,14 +22,13 @@ class SiamInconv(nn.Module):
         self.conv_layers = []
         for head in range(num_heads):
         	self.conv_layers.append(ConvRelu(1, out_channels))
-        self.activation = nn.ReLU(inplace=True)
 
     def forward(self, x):
     	for i in range(self.conv_layers):
     		if i == 0:
-    			out = self.activation(self.conv_layers[i](x[i]))
+    			out = self.conv_layers[i](x[i])
     		else:
-    			out += self.activation(self.conv_layers[i](x[i]))
+    			out += self.conv_layers[i](x[i])
         return out
 
 class ConvRelu(nn.Module):
