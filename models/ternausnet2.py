@@ -17,18 +17,34 @@ def conv3x3(in_, out):
     return nn.Conv2d(in_, out, 3, padding=1)
 
 class SiamInconv(nn.Module):
-    def __init__(self, num_heads, out_channels):
+    def __init__(self, num_heads, out_channels, deepness=1):
         super(SiamInconv, self).__init__()
         self.conv_layers = []
         for head in range(num_heads):
-        	self.conv_layers.append(ConvRelu(1, out_channels))
+        	conv_block = []
+        	for conv_num in range(deepness):
+        		if conv_num == 0:
+        			conv_block.append(ConvRelu(1, out_channels))
+        		else:
+        			conv_block.append(ConvRelu(out_channels, out_channels))        			
+        self.conv_layers.append(conv_block)
 
     def forward(self, x):
-    	for i in range(self.conv_layers):
-    		if i == 0:
-    			out = self.conv_layers[i](x[i])
-    		else:
-    			out += self.conv_layers[i](x[i])
+    	for i, conv_block in enumerate(self.conv_layers):
+    		for j, conv in enumerate(conv_block):
+    			if i == 0:
+    				if j == 0:
+    					out_new = conv(x[i])
+    				else:
+    					out_new = conv(out)
+    			else:
+    				if j == 0:
+    					out_new = conv(x[i])
+    				else:
+    					out_new = conv(out)
+    				out = out_new
+    			else:
+    				out += out_new
         return out
 
 class ConvRelu(nn.Module):
