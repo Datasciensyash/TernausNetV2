@@ -27,9 +27,9 @@ class SiamInconv(nn.Module):
     def forward(self, x):
     	for i in range(self.conv_layers):
     		if i == 0:
-    			out = self.activation(self.conv_layers[i](x))
+    			out = self.activation(self.conv_layers[i](x[i]))
     		else:
-    			out += self.activation(self.conv_layers[i](x))
+    			out += self.activation(self.conv_layers[i](x[i]))
         return out
 
 class ConvRelu(nn.Module):
