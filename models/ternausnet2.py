@@ -21,30 +21,29 @@ class SiamInconv(nn.Module):
         super(SiamInconv, self).__init__()
         self.conv_layers = []
         for head in range(num_heads):
-        	conv_block = []
-        	for conv_num in range(deepness):
-        		if conv_num == 0:
-        			conv_block.append(ConvRelu(1, out_channels))
-        		else:
-        			conv_block.append(ConvRelu(out_channels, out_channels))        			
+            conv_block = []
+            for conv_num in range(deepness):
+                if conv_num == 0:
+                    conv_block.append(ConvRelu(1, out_channels))
+                else:
+                    conv_block.append(ConvRelu(out_channels, out_channels))                    
         self.conv_layers.append(conv_block)
 
     def forward(self, x):
-    	for i, conv_block in enumerate(self.conv_layers):
-    		for j, conv in enumerate(conv_block):
-    			if i == 0:
-    				if j == 0:
-    					out_new = conv(x[i])
-    				else:
-    					out_new = conv(out)
-    			else:
-    				if j == 0:
-    					out_new = conv(x[i])
-    				else:
-    					out_new = conv(out)
-    				out = out_new
-    			else:
-    				out += out_new
+        for i, conv_block in enumerate(self.conv_layers):
+            for j, conv in enumerate(conv_block):
+                if i == 0:
+                    if j == 0:
+                        out_new = conv(x[i])
+                    else:
+                        out_new = conv(out)
+                    out = out_new
+                else:
+                    if j == 0:
+                        out_new = conv(x[i])
+                    else:
+                        out_new = conv(out)
+                    out += out_new
         return out
 
 class ConvRelu(nn.Module):
