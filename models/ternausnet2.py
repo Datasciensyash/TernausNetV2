@@ -16,6 +16,21 @@ from modules.wider_resnet import WiderResNet
 def conv3x3(in_, out):
     return nn.Conv2d(in_, out, 3, padding=1)
 
+class SiamInconv(nn.Module):
+    def __init__(self, num_heads, out_channels):
+        super(SiamInconv, self).__init__()
+        self.conv_layers = []
+        for head in range(num_heads):
+        	self.conv_layers.append(ConvRelu(1, out_channels))
+        self.activation = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+    	for i in range(self.conv_layers):
+    		if i == 0:
+    			out = self.activation(self.conv_layers[i](x))
+    		else:
+    			out += self.activation(self.conv_layers[i](x))
+        return out
 
 class ConvRelu(nn.Module):
     def __init__(self, in_, out):
